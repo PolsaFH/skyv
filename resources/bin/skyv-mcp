@@ -1,0 +1,5 @@
+#!/bin/sh
+# skyv-mcp: MCP bridge that lets an AI client (Claude Code, the Claude app) talk to Skyv.
+# It runs with Skyv's own built-in Electron, so nothing else needs to be installed.
+CONTENTS="$(cd "$(dirname "$0")/../.." && pwd)"
+ELECTRON_RUN_AS_NODE=1 exec "$CONTENTS/MacOS/Skyv" "$CONTENTS/Resources/app.asar.unpacked/out/bridge/skyv-mcp.cjs" "$@"
