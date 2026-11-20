@@ -1,136 +1,203 @@
+<div align="center">
+
+<img src="docs/images/icon.png" width="128" height="128" alt="Skyv app icon">
+
 # Skyv
 
-**Norsk** · [English](#english)
+**Publish website changes as releases, not files.**
 
-Skyv er en gratis Mac-app som gir ut endringer på nettsidene dine til webhotellet via FTP, FTPS eller SFTP.
-Du tenker ikke i filer, men i utgivelser: noe er endret på Macen, du gir det ut, og hver utgivelse kan angres.
+A macOS app for FTP, FTPS and SFTP that checks your changes before they go live, verifies the live site afterwards, and lets you undo any release with one click.
 
-Skyv er laget for deg som lager nettsider (HTML, CSS, JavaScript eller PHP), gjerne sammen med en AI, og som vil slippe FileZilla.
+[![Latest release](https://img.shields.io/github/v/release/PolsaFH/skyv?label=release&color=2563eb)](https://github.com/PolsaFH/skyv/releases/latest)
+![macOS 12+](https://img.shields.io/badge/macOS-12%2B-111111?logo=apple&logoColor=white)
+![Apple silicon and Intel](https://img.shields.io/badge/Apple%20silicon%20%2B%20Intel-supported-111111)
+![274 tests passing](https://img.shields.io/badge/tests-274%20passing-2ea44f)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-8250df)](LICENSE.md)
 
-- Ingen konto og ingen abonnement.
-- Alt skjer på Macen din. Skyv sender ingenting til utvikleren eller andre.
-- Passord lagres kryptert i nøkkelringen på Macen.
+[**Download for Mac**](https://github.com/PolsaFH/skyv/releases/latest) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [AI connection](#work-with-ai-safely) &nbsp;·&nbsp; [Architecture](#under-the-hood) &nbsp;·&nbsp; [🇳🇴 Norsk](README.no.md)
 
-## Last ned
+<br>
 
-Gå til [Releases](../../releases/latest) og last ned:
+<img src="docs/images/changes.png" alt="Skyv showing six pending changes, a warning about placeholder text, and a line-by-line difference for a CSS file" width="900">
 
-- `Skyv-<versjon>-arm64.dmg` for Mac med Apple-prosessor (M1, M2, M3, M4 …)
-- `Skyv-<versjon>-x64.dmg` for Mac med Intel-prosessor
+</div>
 
-Krever macOS 12 eller nyere.
+<br>
 
-## Installere
+## Why Skyv
 
-1. Åpne `.dmg`-filen og dra Skyv til **Programmer** (Applications).
-2. Åpne Skyv. Fordi appen ikke er godkjent av Apple, sier macOS at den ikke kan bekreftes. Trykk **Done** (eller **OK**).
-3. Gå til **Systeminnstillinger → Personvern og sikkerhet** (System Settings → Privacy & Security), bla ned og trykk **Åpne likevel** (Open Anyway) ved Skyv. Bekreft med passordet ditt.
-4. Neste gang åpner Skyv seg som vanlig.
+Classic FTP clients copy files. You have to remember what you changed, nothing stops you from overwriting someone else's work, and there is no way back if the site breaks.
 
-PHP er valgfritt. Med PHP installert (for eksempel `brew install php`) får du sjekk av PHP-filer og lokal forhåndsvisning av PHP-sider.
+Skyv treats the folder on your Mac as the source of truth and the web server as a place you *release* to. Every release is checked, backed up, verified and reversible.
 
-## Hva Skyv gjør
+It is built for people who make websites (HTML, CSS, JavaScript or PHP), often together with an AI assistant, and who want the safety of a deployment pipeline without learning git.
 
-- **Flere nettsider** side om side, med antall endringer som venter.
-- **Veiviser for ny nettside:** test av tilkoblingen, automatisk funn av riktig mappe på serveren, og valg av utgangspunkt.
-- **Endringsliste:** ny, endret, slettet og omdøpt, med tekstforskjeller linje for linje og bilder før og etter.
-- **Utgivelse:** sikkerhetskopi først, midlertidige filnavn, flere tilkoblinger, nye forsøk ved brudd og fullføring etter krasj.
-- **Angre** hele utgivelsen eller utvalgte filer.
-- **Beskyttelse** mot å overskrive filer som noen andre har endret på serveren.
-- **Avhengigheter:** filer som trengs blir tatt med automatisk, og du får varsel om lenker som vil bli ødelagte.
-- **Feilfangere før utgivelse:** nøkler og passord, sensitive filer, lokale lenker, plassholdertekst, PHP-feil, ugyldig JSON og mer.
-- **Sjekk av den ekte nettsiden** etter opplasting, med angring med ett klikk eller automatisk.
-- **Menylinjen:** tall og hurtigutgivelse. Mappene overvåkes i bakgrunnen, endringer grupperes i økter, og du får varsel.
-- **Før og etter:** skjermbilder av den ekte siden og din versjon, med lokal forhåndsvisning (også PHP).
-- **Notater:** sammendrag på norsk (valgfritt med AI og din egen nøkkel), historikk, logg, og eksport og import av oppsett.
-- **Sjekk av serveren:** finner filer som mangler, er endret eller bare finnes på serveren, og lar deg velge hva som skal skje.
-- **AI-tilkobling:** Claude Code eller Claude-appen kan se nettsidene, kjøre sjekkene og klargjøre utgivelser som du godkjenner i Skyv. Ingen API-nøkkel trengs.
-- **Historikk per fil:** hva som ble endret i hver utgivelse, linje for linje.
-- **Kommandolinjen `skyv`:** status, endringer, sjekker og utkast fra Terminal.
+> **Note:** the app interface is in Norwegian (bokmål). This README is in English, and there is a [Norwegian version](README.no.md).
 
-## AI-tilkobling (valgfritt)
+<br>
 
-1. Åpne innstillingene (tannhjulet nederst til venstre), trykk **AI-tilkobling …** og slå den på.
-2. Velg nivå for nettsiden: "Bare se", "Se og klargjøre" eller "Se, klargjøre og gi ut".
-3. Kopier kommandoen for Claude Code og kjør den i Terminal, for eksempel:
+## Features
+
+### See exactly what will change
+Skyv watches your site folders and lists what is new, changed, deleted or renamed since the last release. You get line-by-line differences for text and before/after views for images. It also finds files your pages depend on and includes them automatically, so you never publish a page with a missing stylesheet.
+
+### Catch mistakes before they go live
+Every release runs through a set of checks. Serious problems block the release until you fix them or explicitly accept the risk.
+
+| Check | What it catches |
+|---|---|
+| Secrets | API keys, passwords and private keys in your code |
+| Sensitive files | `.env` files, SSH keys, certificates, database dumps, backups and archives that should never be public |
+| Broken references | Links to files that will be missing, and links to `localhost` or local network addresses |
+| PHP | Syntax errors, using the PHP installed on your Mac |
+| Content | Leftover placeholder text such as *lorem ipsum*, and invalid JSON |
+| Conflicts | Files that someone else changed on the server since your last release |
+
+### Publish safely
+- **Backup first:** every file that will be overwritten or deleted is downloaded before anything changes.
+- **No half-written files:** uploads go to a temporary name and are renamed into place when complete.
+- **Parallel and resilient:** several connections at once, automatic retries, and safe resume after a crash or power loss.
+- **Deletions are never automatic:** they are opt-in, every time.
+
+### Verify the live site, and undo with one click
+After each upload Skyv loads the affected pages from your real web address. It checks that they respond, show no PHP errors, and that their images, CSS and JavaScript load. If something is wrong you can undo the whole release, or only selected files. You can also let Skyv undo automatically.
+
+### Notice when the server drifts
+**Check the server** compares the server with what Skyv last published and lists three kinds of drift:
+- files that are **missing** on the server
+- files that were **changed** there
+- files that exist **only on the server**
+
+Each one comes with a clear choice: upload again, fetch the server version, keep yours, or leave it. Anything removed on your Mac goes to the Trash, never deleted for good.
+
+### History for every file
+Each release stores a compact line difference per text file. Open any file to see when it changed, in which release, with which note, and exactly what changed.
+
+<br>
+
+<div align="center">
+<img src="docs/images/history.png" alt="File history for css/stil.css showing two releases and the lines that changed" width="820">
+</div>
+
+<br>
+
+## Work with AI, safely
+
+Skyv includes a local [Model Context Protocol](https://modelcontextprotocol.io) server. With it, **Claude Code** or the **Claude app** can see your sites, run the checks, take screenshots of pages and prepare releases. No API key is needed, and you stay in control.
+
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/ai-dark.png">
+  <img src="docs/images/ai-light.png" alt="A release prepared by Claude Code waiting for approval, above a server check that found a missing file" width="900">
+</picture>
+</div>
+
+<br>
+
+- **Off by default**, with a main switch, and every new AI client must be approved in the app.
+- **Three permission levels per site:** *view*, *view and prepare*, or *view, prepare and publish*.
+- **Drafts, not surprises:** the AI prepares a release with a note. It shows up as a banner in Skyv, marked *Written by AI*, and you publish it with one click.
+- **Hard stops the AI cannot bypass**, even at the highest level:
+  - blocking findings
+  - server conflicts
+  - unhandled server drift
+  - deletions
+  - files changed after the draft was made
+- **Never undoes on its own:** the AI can only *ask* you to undo a release.
+- **Secrets stay secret:**
+  - Passwords are never sent to the AI.
+  - Lines that look like keys are masked.
+  - Every reply is scrubbed for known passwords.
+  - File and page content is marked as data, not instructions, to resist prompt injection.
+- **Closes the loop:** if the live-site check fails after an AI release, the AI gets the failing page, file and error, so it can fix the problem and prepare a new release.
+
+One command connects Claude Code:
 
 ```bash
 claude mcp add skyv -- /Applications/Skyv.app/Contents/Resources/bin/skyv-mcp
 ```
 
-4. Start Claude Code i mappen til nettsiden. Første gang spør Skyv "Claude Code vil koble til Skyv. Tillat?".
+Then ask things like:
+- *"What has changed on the website?"*
+- *"Run the checks and fix what you can."*
+- *"When was stil.css last changed?"*
+- *"Prepare a release with a short note."*
 
-Ting du kan be om:
+There is also a `skyv` command for the terminal (`skyv status`, `skyv check`, `skyv prepare`), with the same permissions.
 
-- "Hva er endret i nettsiden?" (bruker `skyv_get_changes`)
-- "Kjør sjekkene og rett det du kan." (`skyv_run_checks`)
-- "Ta et skjermbilde av forsiden på mobil." (`skyv_screenshot`)
-- "Klargjør en utgivelse med et kort notat." (`skyv_prepare_release`, du trykker "Gi ut" i Skyv)
-- "Når ble stil.css sist endret?" (`skyv_get_file_history`)
-- "Hva var forskjellen på mandagens og fredagens utgivelse?" (`skyv_compare_releases`)
-- "Er det noe som er endret på serveren uten at jeg vet om det?" (`skyv_get_server_deviations`)
+<br>
 
-Kommandolinjen (installeres fra samme side):
+## Under the hood
 
-```bash
-skyv status
+```mermaid
+flowchart LR
+    AI["Claude Code /<br/>Claude app"] -- "MCP over stdio" --> Bridge["skyv-mcp<br/>bridge"]
+    CLI["skyv CLI"] --> Bridge
+    Bridge -- "Unix socket (0600)" --> Gate["Permission gate<br/>switch · approval ·<br/>rate limit · level"]
+    UI["Skyv app<br/>(React UI)"] -- "IPC" --> Core
+    Gate --> Core["Core services<br/>scan · checks · drafts ·<br/>releases · undo"]
+    Core --> Keychain[("macOS<br/>Keychain")]
+    Core -- "FTP / FTPS / SFTP" --> Server[("Web host")]
+    Core -- "HTTP check" --> Live["Live website"]
 ```
 
-```bash
-skyv changes kafe.no
-```
+**How a release flows:**
+1. scan
+2. dependency resolution
+3. checks
+4. conflict check
+5. backup
+6. upload to temporary names
+7. rename into place
+8. live-site verification
+9. automatic undo (optional)
+
+| | |
+|---|---|
+| **Stack** | Electron 45, React 19, TypeScript (strict), Vite, electron-vite |
+| **Transfer** | `basic-ftp` (FTP/FTPS), `ssh2-sftp-client` (SFTP) |
+| **AI** | `@modelcontextprotocol/sdk`, Zod schemas, local Unix socket API |
+| **Storage** | Atomic JSON writes, content-addressed copies, passwords encrypted with the macOS Keychain |
+| **Design** | Core logic in `src/core` is plain TypeScript with no Electron imports. The UI, the AI connection and the CLI all go through the same services, so the same rules apply everywhere. |
+| **Tests** | 274 tests with Vitest: unit tests, integration tests against a local FTP server, and end-to-end tests that drive the real app with Playwright |
+| **Performance** | 5,000 files: first scan about 0.8 s, rescan about 0.55 s, pre-release checks about 0.4 s (Apple silicon) |
+
+More on architecture, design decisions and known limitations is in [`docs/UTVIKLING.md`](docs/UTVIKLING.md) (Norwegian).
+
+<br>
+
+## Install
+
+1. Download `Skyv-<version>-arm64.dmg` (Apple silicon) or `Skyv-<version>-x64.dmg` (Intel) from [Releases](https://github.com/PolsaFH/skyv/releases/latest).
+2. Open the `.dmg` and drag Skyv to **Applications**.
+3. Open Skyv and dismiss the warning. The app is not notarized by Apple.
+4. Go to **System Settings → Privacy & Security** and click **Open Anyway**.
+
+Optional: install PHP (`brew install php`) to enable PHP syntax checks and local preview of PHP pages.
+
+### Build from source
 
 ```bash
-skyv check
+npm install
+npm run dev     # run in development
+npm test        # run the test suite
+npm run dist    # build .dmg files for Apple silicon and Intel
 ```
 
-```bash
-skyv prepare --note "Ny åpningstid på forsiden"
-```
+Requires Node 20 or later.
 
-Står du i mappen til en nettside, trenger du ikke oppgi navnet. `--json` gir svaret som JSON.
+<br>
 
-## Hvor data lagres
+## Privacy
 
-Alt ligger på Macen din, i `~/Library/Application Support/Skyv/`: oppsettet for nettsidene, historikken, sikkerhetskopier og loggen. Passord ligger kryptert med nøkkelringen. "Fjern fra Skyv" sletter bare Skyvs egne data om nettsiden, aldri filene dine på Macen eller på serveren.
+Skyv has no account, no telemetry and no server of its own. Everything stays on your Mac:
+- Site settings, history and backups are stored in `~/Library/Application Support/Skyv`.
+- Passwords are encrypted with the macOS Keychain.
+- The AI connection is local and stays off unless you turn it on.
 
-## Kjente begrensninger
-
-- Appen er ikke signert av Apple. Se "Installere" for hvordan du åpner den første gang.
-- Knappen "Se gjennom" i varsler kan mangle av samme grunn. Klikk på selve varselet virker.
-- SFTP er bygget, men bare FTP og FTPS er testet grundig.
-- Ingen automatisk oppdatering. Se etter nye versjoner under Releases.
-- Bruk gjerne en testmappe på webhotellet første gang.
-
-## Lisens
+## License
 
 Copyright © 2026 Filip Hjelmeland.
 
-Skyv er gratis for ikke-kommersiell bruk under [PolyForm Noncommercial License 1.0.0](LICENSE.md). Du kan bruke appen, og lese og endre koden til eget, ikke-kommersielt bruk. Du kan ikke selge Skyv eller bruke koden i noe kommersielt uten skriftlig tillatelse. Appen leveres som den er, uten garanti.
-
-For utviklere: se [docs/UTVIKLING.md](docs/UTVIKLING.md).
-
----
-
-## English
-
-Skyv is a free Mac app that publishes changes to your websites via FTP, FTPS or SFTP. You think in releases, not files: something changed on your Mac, you publish it, and every release can be undone.
-
-Highlights:
-
-- **Change list and checks before publishing.** Skyv catches leaked keys and passwords, broken links and PHP errors.
-- **Safe publishing.** Every release is backed up first, and you can undo it.
-- **Checks after publishing.** Skyv checks the live site, and can find changes made on the server by someone else.
-- **Optional AI connection.** Claude Code or the Claude app can look at your sites, run the checks and prepare releases for you to approve. No API key is needed.
-
-No account, no subscription, nothing is sent to the developer. Passwords are stored encrypted in the macOS keychain.
-
-**The app itself is in Norwegian.**
-
-**Download:** see [Releases](../../releases/latest). Use `arm64` for Apple silicon and `x64` for Intel. Requires macOS 12 or later.
-
-**First launch:** the app is not notarized by Apple.
-1. Open it once and dismiss the warning.
-2. Go to **System Settings → Privacy & Security** and click **Open Anyway** next to Skyv.
-
-**License:** free for noncommercial use under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Copyright © 2026 Filip Hjelmeland. You may not sell Skyv or use the code commercially without written permission. Provided as is, without warranty.
+Skyv is free for noncommercial use under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use the app, and read and modify the code for noncommercial purposes. Commercial use requires written permission. Provided as is, without warranty.

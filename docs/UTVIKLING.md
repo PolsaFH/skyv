@@ -333,4 +333,13 @@ Se [TESTSJEKKLISTE.md](TESTSJEKKLISTE.md). Bruk alltid en testmappe på webhotel
 - **Lisens:** PolyForm Noncommercial 1.0.0 (`LICENSE.md`). Koden er offentlig, men kan ikke brukes kommersielt uten tillatelse. Opphavsretten er Filip Hjelmelands.
 - **Signering:** Appen signeres ad hoc (uten Apple Developer ID) av `scripts/adhocSign.cjs` etter pakking. Uten dette er signaturen ufullstendig, og macOS kaller en nedlastet kopi "skadet". Med den sier macOS bare at utvikleren ikke kan bekreftes, og brukeren velger "Open Anyway" én gang. Full signering og godkjenning hos Apple krever en Apple Developer-konto.
 - **Dokumentasjon:** `README.md` er skrevet for brukere (norsk og engelsk). Teknisk dokumentasjon ligger her i `docs/UTVIKLING.md`, og logg, plan og testsjekkliste ligger i `docs/`.
-- **Utgivelse:** `npm run dist`, så last opp `release/Skyv-<versjon>-arm64.dmg` og `release/Skyv-<versjon>-x64.dmg` som en ny Release på GitHub.
+- **Offentlig repo:** https://github.com/PolsaFH/skyv. GitHub har sin egen, korte historikk (grenen `public` her, `main` der). Den fulle historikken finnes bare lokalt på grenen `main`, og skal ikke pushes.
+- **Ny versjon ut:** øk versjonen i `package.json`, kjør testene og `npm run dist`, commit på `main`, og så:
+
+```bash
+git checkout public && git rm -rq . && git checkout main -- . && git commit -m "Skyv <versjon>" && git push && git checkout main
+```
+
+```bash
+gh release create v<versjon> release/Skyv-<versjon>-arm64.dmg release/Skyv-<versjon>-x64.dmg --repo PolsaFH/skyv --target main --title "Skyv <versjon>" --notes "Hva er nytt"
+```
